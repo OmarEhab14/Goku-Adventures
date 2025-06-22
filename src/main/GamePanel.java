@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable {
     //SCREEN SETTINGS
-    final int originalTileSize = 32; // 16x16 tiles
+    final int originalTileSize = 32; // 32x32 tiles
     final int scale = 3;
     public final int tileSize = originalTileSize * scale; // 48 pixels
     final int maxScreenCol = 16;
@@ -24,7 +24,7 @@ public class GamePanel extends JPanel implements Runnable {
     public GamePanel() {
         setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.GREEN);
-        this.setDoubleBuffered(true);
+        this.setDoubleBuffered(true); // enables flicker-free rendering for better performance (like an invisible canvas in memory and when the drawing is complete, the entire image is copied to the screen at once, unlike the frame buffer where the user can see the drawing happening)
         this.addKeyListener(keyH);
         this.setFocusable(true);
     }
@@ -90,7 +90,7 @@ public class GamePanel extends JPanel implements Runnable {
                 // 1.UPDATE
                 update();
                 // 2.REPAINT
-                repaint();
+                repaint(); // this is how you call the paintComponent method.
                 delta--;
                 drawCount++;
             }

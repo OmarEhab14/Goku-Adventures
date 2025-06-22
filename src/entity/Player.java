@@ -1,5 +1,6 @@
 package entity;
 
+import assets.AssetManager;
 import main.GamePanel;
 import main.KeyHandler;
 
@@ -45,62 +46,58 @@ public class Player extends Entity {
     }
 
     public void loadPlayerImages() {
-        try {
-            // Moving sprites
-            movingSprites.put(Direction.UP, new BufferedImage[]{
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_up_1.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_up_2.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_up_3.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_up_4.png"))
-            });
+        // Moving sprites
+        movingSprites.put(Direction.UP, new BufferedImage[]{
+                AssetManager.getInstance().getImage("/player/goku_up_1.png"),
+                AssetManager.getInstance().getImage("/player/goku_up_2.png"),
+                AssetManager.getInstance().getImage("/player/goku_up_3.png"),
+                AssetManager.getInstance().getImage("/player/goku_up_4.png"),
+        });
 
-            movingSprites.put(Direction.DOWN, new BufferedImage[]{
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_down_1.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_down_2.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_down_3.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_down_4.png"))
-            });
+        movingSprites.put(Direction.DOWN, new BufferedImage[]{
+                AssetManager.getInstance().getImage("/player/goku_down_1.png"),
+                AssetManager.getInstance().getImage("/player/goku_down_2.png"),
+                AssetManager.getInstance().getImage("/player/goku_down_3.png"),
+                AssetManager.getInstance().getImage("/player/goku_down_4.png"),
+        });
 
-            movingSprites.put(Direction.RIGHT, new BufferedImage[]{
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_right_1.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_right_2.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_right_3.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_right_4.png"))
-            });
+        movingSprites.put(Direction.RIGHT, new BufferedImage[]{
+                AssetManager.getInstance().getImage("/player/goku_right_1.png"),
+                AssetManager.getInstance().getImage("/player/goku_right_2.png"),
+                AssetManager.getInstance().getImage("/player/goku_right_3.png"),
+                AssetManager.getInstance().getImage("/player/goku_right_4.png"),
+        });
 
-            movingSprites.put(Direction.LEFT, new BufferedImage[]{
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_left_1.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_left_2.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_left_3.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_left_4.png"))
-            });
+        movingSprites.put(Direction.LEFT, new BufferedImage[]{
+                AssetManager.getInstance().getImage("/player/goku_left_1.png"),
+                AssetManager.getInstance().getImage("/player/goku_left_2.png"),
+                AssetManager.getInstance().getImage("/player/goku_left_3.png"),
+                AssetManager.getInstance().getImage("/player/goku_left_4.png"),
+        });
 
-            // Idle sprites
-            idleSprites.put(Direction.UP, new BufferedImage[]{
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_up_idle.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_up_idle.png"))
-            });
+        // Idle sprites
+        idleSprites.put(Direction.UP, new BufferedImage[]{
+                AssetManager.getInstance().getImage("/player/goku_up_idle.png"),
+                AssetManager.getInstance().getImage("/player/goku_up_idle.png"),
+        });
 
-            idleSprites.put(Direction.DOWN, new BufferedImage[]{
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_down_idle_1.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_down_idle_2.png"))
-            });
+        idleSprites.put(Direction.DOWN, new BufferedImage[]{
+                AssetManager.getInstance().getImage("/player/goku_down_idle_1.png"),
+                AssetManager.getInstance().getImage("/player/goku_down_idle_2.png"),
+        });
 
-            idleSprites.put(Direction.RIGHT, new BufferedImage[]{
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_right_idle_1.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_right_idle_2.png"))
-            });
+        idleSprites.put(Direction.RIGHT, new BufferedImage[]{
+                AssetManager.getInstance().getImage("/player/goku_right_idle_1.png"),
+                AssetManager.getInstance().getImage("/player/goku_right_idle_2.png"),
+        });
 
-            idleSprites.put(Direction.LEFT, new BufferedImage[]{
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_left_idle_1.png")),
-                    ImageIO.read(getClass().getResourceAsStream("/player/goku_left_idle_2.png"))
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        idleSprites.put(Direction.LEFT, new BufferedImage[]{
+                AssetManager.getInstance().getImage("/player/goku_left_idle_1.png"),
+                AssetManager.getInstance().getImage("/player/goku_left_idle_2.png"),
+        });
     }
 
+    @Override
     public void update() {
         boolean wasMoving = isMoving; // Track the previous movement state
         isMoving = false;
@@ -163,7 +160,7 @@ public class Player extends Entity {
         }
     }
 
-
+    @Override
     public void draw(Graphics2D g2) {
         BufferedImage image;
 
