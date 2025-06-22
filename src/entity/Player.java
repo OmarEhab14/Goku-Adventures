@@ -3,6 +3,7 @@ package entity;
 import assets.AssetManager;
 import main.GamePanel;
 import main.KeyHandler;
+import util.SpriteLoader;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,11 +15,11 @@ import java.util.Map;
 public class Player extends Entity {
     enum Direction {UP, DOWN, LEFT, RIGHT}
 
-    private GamePanel gp;
-    private KeyHandler keyH;
+    private final GamePanel gp;
+    private final KeyHandler keyH;
     private Direction direction;
-    private Map<Direction, BufferedImage[]> movingSprites;
-    private Map<Direction, BufferedImage[]> idleSprites;
+    private final Map<Direction, BufferedImage[]> movingSprites;
+    private final Map<Direction, BufferedImage[]> idleSprites;
     private boolean isMoving;
     private long lastBlinkTime;
     private long blinkDuration = 200000000; // Duration of blink (in nanoseconds)
@@ -47,54 +48,22 @@ public class Player extends Entity {
 
     public void loadPlayerImages() {
         // Moving sprites
-        movingSprites.put(Direction.UP, new BufferedImage[]{
-                AssetManager.getInstance().getImage("/player/goku_up_1.png"),
-                AssetManager.getInstance().getImage("/player/goku_up_2.png"),
-                AssetManager.getInstance().getImage("/player/goku_up_3.png"),
-                AssetManager.getInstance().getImage("/player/goku_up_4.png"),
-        });
+        movingSprites.put(Direction.UP, SpriteLoader.loadPlayer("goku_up", 4));
 
-        movingSprites.put(Direction.DOWN, new BufferedImage[]{
-                AssetManager.getInstance().getImage("/player/goku_down_1.png"),
-                AssetManager.getInstance().getImage("/player/goku_down_2.png"),
-                AssetManager.getInstance().getImage("/player/goku_down_3.png"),
-                AssetManager.getInstance().getImage("/player/goku_down_4.png"),
-        });
+        movingSprites.put(Direction.DOWN, SpriteLoader.loadPlayer("goku_down", 4));
 
-        movingSprites.put(Direction.RIGHT, new BufferedImage[]{
-                AssetManager.getInstance().getImage("/player/goku_right_1.png"),
-                AssetManager.getInstance().getImage("/player/goku_right_2.png"),
-                AssetManager.getInstance().getImage("/player/goku_right_3.png"),
-                AssetManager.getInstance().getImage("/player/goku_right_4.png"),
-        });
+        movingSprites.put(Direction.RIGHT, SpriteLoader.loadPlayer("goku_right", 4));
 
-        movingSprites.put(Direction.LEFT, new BufferedImage[]{
-                AssetManager.getInstance().getImage("/player/goku_left_1.png"),
-                AssetManager.getInstance().getImage("/player/goku_left_2.png"),
-                AssetManager.getInstance().getImage("/player/goku_left_3.png"),
-                AssetManager.getInstance().getImage("/player/goku_left_4.png"),
-        });
+        movingSprites.put(Direction.LEFT, SpriteLoader.loadPlayer("goku_left", 4));
 
         // Idle sprites
-        idleSprites.put(Direction.UP, new BufferedImage[]{
-                AssetManager.getInstance().getImage("/player/goku_up_idle.png"),
-                AssetManager.getInstance().getImage("/player/goku_up_idle.png"),
-        });
+        idleSprites.put(Direction.UP, SpriteLoader.loadPlayer("goku_up_idle", 1));
 
-        idleSprites.put(Direction.DOWN, new BufferedImage[]{
-                AssetManager.getInstance().getImage("/player/goku_down_idle_1.png"),
-                AssetManager.getInstance().getImage("/player/goku_down_idle_2.png"),
-        });
+        idleSprites.put(Direction.DOWN, SpriteLoader.loadPlayer("goku_down_idle", 2));
 
-        idleSprites.put(Direction.RIGHT, new BufferedImage[]{
-                AssetManager.getInstance().getImage("/player/goku_right_idle_1.png"),
-                AssetManager.getInstance().getImage("/player/goku_right_idle_2.png"),
-        });
+        idleSprites.put(Direction.RIGHT, SpriteLoader.loadPlayer("goku_right_idle", 2));
 
-        idleSprites.put(Direction.LEFT, new BufferedImage[]{
-                AssetManager.getInstance().getImage("/player/goku_left_idle_1.png"),
-                AssetManager.getInstance().getImage("/player/goku_left_idle_2.png"),
-        });
+        idleSprites.put(Direction.LEFT, SpriteLoader.loadPlayer("goku_left_idle", 2));
     }
 
     @Override
