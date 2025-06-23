@@ -4,6 +4,7 @@ import assets.AssetManager;
 import main.GamePanel;
 import main.KeyHandler;
 import util.SpriteLoader;
+import util.Vector2D;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -38,8 +39,7 @@ public class Player extends Entity {
     }
 
     public void setDefaultValues() {
-        x = 100;
-        y = 100;
+        position = new Vector2D(100, 100);
         speed = 4;
         isMoving = false;
         lastBlinkTime = System.nanoTime();
@@ -71,21 +71,28 @@ public class Player extends Entity {
         boolean wasMoving = isMoving; // Track the previous movement state
         isMoving = false;
 
+        Vector2D movement = new Vector2D();
+
         if (keyH.upPressed) {
             direction = Direction.UP;
-            y -= speed;
-            isMoving = true;
-        } else if (keyH.downPressed) {
+            movement.y -= 1;
+        }
+        if (keyH.downPressed) {
             direction = Direction.DOWN;
-            y += speed;
-            isMoving = true;
-        } else if (keyH.rightPressed) {
+            movement.y += 1;
+        }
+        if (keyH.rightPressed) {
             direction = Direction.RIGHT;
-            x += speed;
-            isMoving = true;
-        } else if (keyH.leftPressed) {
+            movement.x += 1;
+        }
+        if (keyH.leftPressed) {
             direction = Direction.LEFT;
-            x -= speed;
+            movement.x -= 1;
+        }
+
+        if (movement.length() != 0) {
+            movement = movement.normalize().scale(speed);
+            position = position.add(movement);
             isMoving = true;
         }
 
@@ -139,6 +146,6 @@ public class Player extends Entity {
             image = idleSprites.get(direction)[spriteNum - 1];
         }
 
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, (int) position.x, (int) position.y, gp.tileSize, gp.tileSize, null);
     }
 }
