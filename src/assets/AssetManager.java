@@ -17,7 +17,6 @@ public class AssetManager {
         return instance;
     }
 
-    // ✅ Load and return image (from memory if already loaded)
     public BufferedImage getImage(String path) {
         if (!imageCache.containsKey(path)) {
             try {

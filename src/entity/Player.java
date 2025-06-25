@@ -1,32 +1,36 @@
 package entity;
 
-import assets.AssetManager;
+import animation.interfaces.Idleable;
+import animation.interfaces.Movable;
+import animation.states.AnimationState;
+import animation.states.IdleState;
+import animation.states.MoveState;
 import main.GamePanel;
 import main.KeyHandler;
 import util.SpriteLoader;
 import util.Vector2D;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Player extends Entity {
-    enum Direction {UP, DOWN, LEFT, RIGHT}
-
+public class Player extends Entity implements Idleable, Movable {
     private final GamePanel gp;
     private final KeyHandler keyH;
     private Direction direction;
     private final Map<Direction, BufferedImage[]> movingSprites;
     private final Map<Direction, BufferedImage[]> idleSprites;
     private boolean isMoving;
+    private boolean wasMoving;
     private long lastBlinkTime;
     private long blinkDuration = 200000000; // Duration of blink (in nanoseconds)
     private long blinkInterval = 2000000000; // Interval between blinks (in nanoseconds)
     private boolean isBlinking;
-    private long currentTime;
+
+    private AnimationState currentState;
+    private final IdleState idleState;
+    private final MoveState moveState;
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -34,16 +38,70 @@ public class Player extends Entity {
         this.direction = Direction.DOWN;
         this.movingSprites = new HashMap<>();
         this.idleSprites = new HashMap<>();
-        setDefaultValues();
-        loadPlayerImages();
-    }
-
-    public void setDefaultValues() {
         position = new Vector2D(100, 100);
         speed = 4;
         isMoving = false;
-        lastBlinkTime = System.nanoTime();
         isBlinking = false;
+        loadPlayerImages();
+        idleState = new IdleState(this);
+        moveState = new MoveState(this);
+        currentState = idleState;
+        lastBlinkTime = System.nanoTime();
+        isMoving = false;
+        wasMoving = false;
+    }
+
+    // setters and getters
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public Map<Direction, BufferedImage[]> getIdleSprites() {
+        return idleSprites;
+    }
+
+    public Map<Direction, BufferedImage[]> getMovingSprites() {
+        return movingSprites;
+    }
+
+    public Vector2D getPosition() {
+        return position;
+    }
+
+    public int getTileSize() {
+        return gp.tileSize;
+    }
+
+    public boolean isMoving() {
+        return isMoving;
+    }
+
+    public int getSpriteNum() {
+        return spriteNum;
+    }
+
+    public void setSpriteNum(int num) {
+        this.spriteNum = num;
+    }
+
+    public AnimationState getIdleState() {
+        return idleState;
+    }
+
+    public AnimationState getWalkState() {
+        return moveState;
+    }
+
+    public void setWasMoving(boolean wasMoving) {
+        this.wasMoving = wasMoving;
+    }
+
+    public boolean wasMoving() {
+        return wasMoving;
+    }
+
+    public void setLastBlinkTime(long lastBlinkTime) {
+        this.lastBlinkTime = lastBlinkTime;
     }
 
     public void loadPlayerImages() {
@@ -57,7 +115,7 @@ public class Player extends Entity {
         movingSprites.put(Direction.LEFT, SpriteLoader.loadPlayer("goku_left", 4));
 
         // Idle sprites
-        idleSprites.put(Direction.UP, SpriteLoader.loadPlayer("goku_up_idle", 1));
+        idleSprites.put(Direction.UP, SpriteLoader.loadPlayer("goku_up_idle", 2));
 
         idleSprites.put(Direction.DOWN, SpriteLoader.loadPlayer("goku_down_idle", 2));
 
@@ -66,10 +124,14 @@ public class Player extends Entity {
         idleSprites.put(Direction.LEFT, SpriteLoader.loadPlayer("goku_left_idle", 2));
     }
 
+    // change state for the state design pattern
+    public void changeState(AnimationState state) {
+        this.currentState = state;
+    }
+
     @Override
     public void update() {
-        boolean wasMoving = isMoving; // Track the previous movement state
-        isMoving = false;
+        wasMoving = isMoving; // Track the previous movement state
 
         Vector2D movement = new Vector2D();
 
@@ -90,62 +152,40 @@ public class Player extends Entity {
             movement.x -= 1;
         }
 
-        if (movement.length() != 0) {
+        isMoving = movement.length() != 0;
+        if (isMoving) {
             movement = movement.normalize().scale(speed);
             position = position.add(movement);
-            isMoving = true;
         }
-
-        if (isMoving) {
-            if (!wasMoving) {
-                // Reset the blink timer when transitioning from idle to moving
-                lastBlinkTime = System.nanoTime();
-                spriteNum = 1; // Reset to default sprite for moving
-            }
-            spriteCounter++;
-            if (spriteCounter > 8) {
-                spriteNum = (spriteNum % 4) + 1;
-                spriteCounter = 0;
-            }
-        } else {
-            if (wasMoving) {
-                lastBlinkTime = System.nanoTime();
-                // Reset spriteNum when transitioning to idle
-                spriteNum = 1;
-            }
-            currentTime = System.nanoTime();
-            System.out.println("Current Time: " + currentTime);
-            System.out.println("Last Blink Time: " + lastBlinkTime);
-            System.out.println("Time since last blink: " + (currentTime - lastBlinkTime));
-            // Check if it's time to start blinking
-            if (!isBlinking && (currentTime - lastBlinkTime >= blinkInterval)) {
-                isBlinking = true;
-                spriteNum = 2; // Switch to blinking sprite
-                // Only update lastBlinkTime when starting a blink
-                lastBlinkTime = currentTime;
-                System.out.println("Blinking started!");
-            }
-
-            // Check if it's time to stop blinking
-            if (isBlinking && (currentTime - lastBlinkTime > blinkDuration)) {
-                isBlinking = false;
-                spriteNum = 1; // Switch back to default idle sprite
-                lastBlinkTime = currentTime; // Reset timer after blink ends
-                System.out.println("Blinking ended!");
-            }
-        }
+        currentState.update();
     }
 
     @Override
     public void draw(Graphics2D g2) {
-        BufferedImage image;
+        currentState.draw(g2);
+    }
 
-        if (isMoving) {
-            image = movingSprites.get(direction)[spriteNum - 1];
-        } else {
-            image = idleSprites.get(direction)[spriteNum - 1];
+    @Override
+    public void animateIdle() {
+        long currentTime = System.nanoTime();
+        if (!isBlinking && (currentTime - lastBlinkTime >= blinkInterval)) {
+            isBlinking = true;
+            spriteNum = 2;
+            lastBlinkTime = currentTime;
         }
+        if (isBlinking && (currentTime - lastBlinkTime > blinkDuration)) {
+            isBlinking = false;
+            spriteNum = 1;
+            lastBlinkTime = currentTime;
+        }
+    }
 
-        g2.drawImage(image, (int) position.x, (int) position.y, gp.tileSize, gp.tileSize, null);
+    @Override
+    public void animateMove() {
+        spriteCounter++;
+        if (spriteCounter > 8) {
+            spriteNum = (spriteNum % 4) + 1;
+            spriteCounter = 0;
+        }
     }
 }
