@@ -1,6 +1,7 @@
 package main;
 
 import entity.Player;
+import util.Vector2D;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ public class GamePanel extends JPanel implements Runnable {
     int FPS = 60;
     boolean showFPS = true;
     int currentFPS;
-    Player player = new Player(this, this.keyH);
+    Player player = new Player(this, this.keyH, new Vector2D(100, 100), 4);
     Thread gameThread;
 
     public GamePanel() {

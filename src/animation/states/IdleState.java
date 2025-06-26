@@ -1,35 +1,30 @@
 package animation.states;
 
-import entity.Player;
+import entity.AnimatedEntity;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class IdleState implements AnimationState {
-    private final Player player;
+    private final AnimatedEntity entity;
 
-    public IdleState(Player player) {
-        this.player = player;
+    public IdleState(AnimatedEntity entity) {
+        this.entity = entity;
     }
 
     @Override
     public void update() {
-        if (player.wasMoving()) {
-            player.setLastBlinkTime(System.nanoTime());
-            player.setSpriteNum(1);
-            player.setWasMoving(false);
-        }
-        player.animateIdle();
-        if (player.isMoving()) {
-            player.changeState(player.getWalkState());
+        entity.animateIdle();
+        if (entity.isMoving()) {
+            entity.changeState(entity.getMoveState());
         }
     }
 
     @Override
     public void draw(Graphics2D g2) {
-        BufferedImage[] sprites = player.getIdleSprites().get(player.getDirection());
-        int frameIndex = Math.max(0, Math.min(player.getSpriteNum() - 1, sprites.length - 1));
-        g2.drawImage(sprites[frameIndex], (int) player.getPosition().x, (int) player.getPosition().y,
-                player.getTileSize(), player.getTileSize(), null);
+        BufferedImage[] sprites = entity.getIdleSprites().get(entity.getDirection());
+        int frameIndex = Math.max(0, Math.min(entity.getSpriteNum() - 1, sprites.length - 1));
+        g2.drawImage(sprites[frameIndex], (int) entity.getPosition().x, (int) entity.getPosition().y,
+                entity.getTileSize(), entity.getTileSize(), null);
     }
 }
