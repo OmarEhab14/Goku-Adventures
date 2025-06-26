@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AssetManager {
-    private static final AssetManager instance = new AssetManager();
+    private static AssetManager instance;
 
     private final Map<String, BufferedImage> imageCache = new HashMap<>();
     private final Map<String, Clip> soundCache = new HashMap<>();
@@ -20,6 +20,9 @@ public class AssetManager {
     private AssetManager() {}
 
     public static AssetManager getInstance() {
+        if (instance == null) {
+            instance = new AssetManager();
+        }
         return instance;
     }
 
