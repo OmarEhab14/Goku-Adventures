@@ -8,7 +8,6 @@ import java.awt.*;
 public abstract class Entity {
     protected GamePanel gp;
     protected Vector2D position;
-    protected int speed;
     protected int spriteCounter = 0;
     protected int spriteNum = 1;
 
@@ -32,14 +31,6 @@ public abstract class Entity {
 
     public void setPosition(Vector2D position) {
         this.position = position;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
     }
 
     public int getSpriteCounter() {

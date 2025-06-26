@@ -1,7 +1,9 @@
 package entity;
 
+import assets.AssetManager;
 import main.GamePanel;
 import main.KeyHandler;
+import util.SoundPlayer;
 import util.SpriteLoader;
 import util.Vector2D;
 
@@ -14,7 +16,9 @@ public class Player extends AnimatedEntity  {
     private long blinkDuration = 200000000; // Duration of blink (in nanoseconds)
     private long blinkInterval = 2000000000; // Interval between blinks (in nanoseconds)
     private boolean isBlinking;
-
+    private final SoundPlayer footStepSound;
+    private long lastStepTime;
+    private long stepInterval = 200000000; // 200ms (2e+8 nano seconds)
 
 
     public Player(GamePanel gp, KeyHandler keyH, Vector2D position, int speed) {
@@ -25,6 +29,7 @@ public class Player extends AnimatedEntity  {
         loadPlayerImages();
         lastBlinkTime = System.nanoTime();
         wasMoving = false;
+        footStepSound = new SoundPlayer(AssetManager.getInstance().getSound("/sounds/walk.wav"));
     }
 
     public void loadPlayerImages() {
@@ -116,6 +121,12 @@ public class Player extends AnimatedEntity  {
         if (spriteCounter > 8) {
             spriteNum = (spriteNum % 4) + 1;
             spriteCounter = 0;
+
+            long currentTime = System.nanoTime();
+            if (currentTime - lastStepTime > stepInterval) {
+                footStepSound.play();
+                lastStepTime = currentTime;
+            }
         }
     }
 }
