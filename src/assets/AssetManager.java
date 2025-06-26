@@ -5,6 +5,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -50,4 +51,36 @@ public class AssetManager {
         }
         return soundCache.get(path);
     }
+
+    public Clip[] getSoundPool(String path, int poolSize) {
+        if (!soundCache.containsKey(path)) {
+            try {
+                URL soundURL = getClass().getResource(path);
+                AudioInputStream ais = AudioSystem.getAudioInputStream(soundURL);
+                Clip[] pool = new Clip[poolSize];
+                for (int i = 0; i < poolSize; i++) {
+                    Clip clip = AudioSystem.getClip();
+                    clip.open(ais);
+                    pool[i] = clip;
+                }
+                soundCache.put(path, pool[0]);
+
+                return pool;
+
+            } catch (Exception e) {
+                System.err.println("Error loading sound pool: " + path);
+                e.printStackTrace();
+            }
+        } else {
+            Clip existing = soundCache.get(path);
+            Clip[] pool = new Clip[poolSize];
+            for (int i = 0; i < poolSize; i++) {
+                pool[i] = existing;
+            }
+            return pool;
+        }
+
+        return new Clip[0];
+    }
+
 }
