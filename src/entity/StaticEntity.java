@@ -6,7 +6,7 @@ import util.Vector2D;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class StaticEntity extends Entity{
+public abstract class StaticEntity extends Entity{
     private BufferedImage image;
     public StaticEntity(GamePanel gp, BufferedImage image, Vector2D position) {
         super(gp, position);
@@ -22,12 +22,8 @@ public class StaticEntity extends Entity{
     }
 
     @Override
-    public void update() {
-
-    }
+    public abstract void update();
 
     @Override
-    public void draw(Graphics2D g2) {
-
-    }
+    public abstract void draw(Graphics2D g2);
 }

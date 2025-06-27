@@ -1,13 +1,12 @@
 package entity;
 
-import assets.AssetManager;
 import main.GamePanel;
 import main.KeyHandler;
-import util.PooledSoundPlayer;
+import main.World;
+import util.FootStepSoundManager;
 import util.SpriteLoader;
 import util.Vector2D;
 
-import javax.sound.sampled.Clip;
 import java.awt.*;
 
 public class Player extends AnimatedEntity  {
@@ -17,12 +16,13 @@ public class Player extends AnimatedEntity  {
     private long blinkDuration = 200000000; // Duration of blink (in nanoseconds)
     private long blinkInterval = 2000000000; // Interval between blinks (in nanoseconds)
     private boolean isBlinking;
-    private final PooledSoundPlayer footStepSound;
+    private final FootStepSoundManager footStepSoundManager;
     private long lastStepTime;
-    private long stepInterval = 90000000; // 90ms (9e+7 nano seconds)
+    private long stepInterval = 60000000; // 90ms (9e+7 nano seconds)
+    private World world;
 
 
-    public Player(GamePanel gp, KeyHandler keyH, Vector2D position, int speed) {
+    public Player(GamePanel gp, KeyHandler keyH, Vector2D position, int speed, World world) {
         super(gp, position, speed);
         this.gp = gp;
         this.keyH = keyH;
@@ -30,8 +30,8 @@ public class Player extends AnimatedEntity  {
         loadPlayerImages();
         lastBlinkTime = System.nanoTime();
         wasMoving = false;
-        Clip[] walkingClips = AssetManager.getInstance().getSoundPool("/sounds/walk.wav", 4);
-        footStepSound = new PooledSoundPlayer(walkingClips);
+        footStepSoundManager = new FootStepSoundManager();
+        this.world = world;
     }
 
     public void loadPlayerImages() {
@@ -54,7 +54,11 @@ public class Player extends AnimatedEntity  {
         getIdleSprites().put(Direction.LEFT, SpriteLoader.loadPlayer("goku_left_idle", 2));
     }
 
-
+    public Tile getTileUnderPlayer() {
+        int tileX = (int)(getPosition().x + gp.tileSize / 2) / gp.tileSize;
+        int tileY = (int)(getPosition().y + gp.tileSize) / gp.tileSize;
+        return world.getTileAt(tileX, tileY);
+    }
 
     @Override
     public void update() {
@@ -124,7 +128,10 @@ public class Player extends AnimatedEntity  {
         }
         long currentTime = System.nanoTime();
         if ((spriteNum == 1 || spriteNum == 3) && (currentTime - lastStepTime > stepInterval)) {
-            footStepSound.play();
+            Tile tile = getTileUnderPlayer();
+            if (tile != null) {
+                footStepSoundManager.play(tile.getType());
+            }
             lastStepTime = currentTime;
         }
     }

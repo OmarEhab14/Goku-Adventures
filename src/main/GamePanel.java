@@ -19,7 +19,8 @@ public class GamePanel extends JPanel implements Runnable {
     int FPS = 60;
     boolean showFPS = true;
     int currentFPS;
-    Player player = new Player(this, this.keyH, new Vector2D(100, 100), 4);
+    World world = new World(this);
+    Player player = new Player(this, this.keyH, new Vector2D(100, 100), 4, world);
     Thread gameThread;
 
     public GamePanel() {
@@ -27,50 +28,13 @@ public class GamePanel extends JPanel implements Runnable {
         this.setBackground(Color.GREEN);
         this.setDoubleBuffered(true); // enables flicker-free rendering for better performance (like an invisible canvas in memory and when the drawing is complete, the entire image is copied to the screen at once, unlike the frame buffer where the user can see the drawing happening)
         this.addKeyListener(keyH);
-        this.setFocusable(true);
+        this.setFocusable(true); // using this lets the game panel be focused to receive key input
     }
 
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
     }
-
-//    @Override
-//    public void run() {
-//        double drawInterval = 1000000000f / FPS; // 0.01666 seconds
-//        double nextDrawTime = System.nanoTime() + drawInterval;
-//        long timer = 0;
-//        int drawCount = 0;
-//        long lastTime = System.nanoTime();
-//        long currentTime;
-//        while (gameThread != null) {
-//            currentTime = System.nanoTime();
-//            timer += currentTime - lastTime;
-//            lastTime = System.nanoTime();
-//            // 1.UPDATE
-//            update();
-//            // 2.REPAINT
-//            repaint();
-//            drawCount++;
-//
-//            try {
-//                double remainingTime = nextDrawTime - System.nanoTime();
-//                remainingTime /= 1000000;
-//                if (remainingTime < 0) {
-//                    remainingTime = 0;
-//                }
-//                Thread.sleep((long) remainingTime);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//            nextDrawTime += drawInterval;
-//            if(timer >= 1000000000) {
-//                currentFPS = drawCount;
-//                drawCount = 0;
-//                timer = 0;
-//            }
-//        }
-//    }
 
     //Using the delta method
     @Override
@@ -111,6 +75,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        world.draw(g2);
         player.draw(g2);
         if(showFPS) {
             g2.setColor(Color.BLACK);
