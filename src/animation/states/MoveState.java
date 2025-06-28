@@ -15,7 +15,15 @@ public class MoveState implements AnimationState {
     @Override
     public void update() {
         entity.animateMove();
+
+        if (entity.isPunching()) {
+            entity.setSpriteNum(0);
+            entity.togglePunchSide();
+            entity.changeState(entity.getPunchState());
+        }
+
         if (!entity.isMoving()) {
+            entity.setSpriteNum(0);
             entity.changeState(entity.getIdleState());
         }
     }

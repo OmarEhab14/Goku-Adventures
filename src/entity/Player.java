@@ -8,6 +8,10 @@ import util.SpriteLoader;
 import util.Vector2D;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Player extends AnimatedEntity  {
     private final KeyHandler keyH;
@@ -52,6 +56,14 @@ public class Player extends AnimatedEntity  {
         getIdleSprites().put(Direction.RIGHT, SpriteLoader.loadPlayer("goku_right_idle", 2));
 
         getIdleSprites().put(Direction.LEFT, SpriteLoader.loadPlayer("goku_left_idle", 2));
+
+        // Punch sprites
+        for (Direction dir : Direction.values()) {
+            Map<PunchSide, BufferedImage[]> dirPunches = new HashMap<>();
+            dirPunches.put(PunchSide.LEFT, SpriteLoader.loadPlayer("goku_punch_" + dir.name().toLowerCase() + "_left", 4));
+            dirPunches.put(PunchSide.RIGHT, SpriteLoader.loadPlayer("goku_punch_" + dir.name().toLowerCase() + "_right", 4));
+            getPunchSprites().put(dir, dirPunches);
+        }
     }
 
     public Tile getTileUnderPlayer() {
@@ -63,6 +75,7 @@ public class Player extends AnimatedEntity  {
     @Override
     public void update() {
         wasMoving = isMoving(); // Track the previous movement state
+        setPunching(false);
 
         Vector2D movement = new Vector2D();
 
@@ -82,6 +95,9 @@ public class Player extends AnimatedEntity  {
             setDirection(Direction.LEFT);
             movement.x -= 1;
         }
+        if (keyH.isJustPressed(KeyEvent.VK_J)) {
+            setPunching(true);
+        }
 
         setMoving(movement.length() != 0);
         if (isMoving()) {
@@ -89,6 +105,7 @@ public class Player extends AnimatedEntity  {
             position = position.add(movement);
         }
         getCurrentState().update();
+        keyH.clearJustPressed();
     }
 
     @Override
@@ -133,6 +150,15 @@ public class Player extends AnimatedEntity  {
                 footStepSoundManager.play(tile.getType());
             }
             lastStepTime = currentTime;
+        }
+    }
+
+    @Override
+    public void animatePunch() {
+        spriteCounter++;
+        if (spriteCounter > 10) {
+            spriteNum = (spriteNum % 4) + 1;
+            spriteCounter = 0;
         }
     }
 }
