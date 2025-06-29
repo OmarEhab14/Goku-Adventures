@@ -17,6 +17,7 @@ public class PunchState implements AnimationState {
         entity.animatePunch();
         if (entity.getSpriteNum() >= frameLimit) {
             entity.setSpriteNum(0);
+            entity.setHasPlayedPunchSound(false);
             if (entity.isMoving()) {
                 entity.changeState(entity.getMoveState());
             } else {

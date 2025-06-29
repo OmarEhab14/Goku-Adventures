@@ -28,6 +28,7 @@ public abstract class AnimatedEntity extends Entity implements Idleable, Movable
     private final MoveState moveState;
     private final PunchState punchState;
     private PunchSide currentPunchSide;
+    private boolean hasPlayedPunchSound = false;
 
     public AnimatedEntity(GamePanel gp, Vector2D position, int speed) {
         super(gp, position);
@@ -124,6 +125,14 @@ public abstract class AnimatedEntity extends Entity implements Idleable, Movable
 
     public void togglePunchSide() {
         currentPunchSide = currentPunchSide == PunchSide.RIGHT ? PunchSide.LEFT : PunchSide.RIGHT;
+    }
+
+    public boolean isHasPlayedPunchSound() {
+        return hasPlayedPunchSound;
+    }
+
+    public void setHasPlayedPunchSound(boolean hasPlayedPunchSound) {
+        this.hasPlayedPunchSound = hasPlayedPunchSound;
     }
 
     // change state for the state design pattern

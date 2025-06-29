@@ -1,9 +1,11 @@
 package entity;
 
+import assets.AssetManager;
 import main.GamePanel;
 import main.KeyHandler;
 import main.World;
 import util.FootStepSoundManager;
+import util.PooledSoundPlayer;
 import util.SpriteLoader;
 import util.Vector2D;
 
@@ -21,10 +23,11 @@ public class Player extends AnimatedEntity  {
     private long blinkInterval = 2000000000; // Interval between blinks (in nanoseconds)
     private boolean isBlinking;
     private final FootStepSoundManager footStepSoundManager;
+    private final PooledSoundPlayer punchAir;
     private long lastStepTime;
     private long stepInterval = 60000000; // 90ms (9e+7 nano seconds)
     private World world;
-
+    int playedTimes = 0;
 
     public Player(GamePanel gp, KeyHandler keyH, Vector2D position, int speed, World world) {
         super(gp, position, speed);
@@ -36,6 +39,7 @@ public class Player extends AnimatedEntity  {
         wasMoving = false;
         footStepSoundManager = new FootStepSoundManager();
         this.world = world;
+        this.punchAir = new PooledSoundPlayer(AssetManager.getInstance().getSoundPool("/sounds/goku_punch_air.wav", 2));
     }
 
     public void loadPlayerImages() {
@@ -159,6 +163,13 @@ public class Player extends AnimatedEntity  {
         if (spriteCounter > 10) {
             spriteNum = (spriteNum % 4) + 1;
             spriteCounter = 0;
+            if (!isHasPlayedPunchSound()) {
+                punchAir.play();
+                playedTimes = (playedTimes % 2) + 1;
+                if (playedTimes >= 2) {
+                    setHasPlayedPunchSound(true);
+                }
+            }
         }
     }
 }
